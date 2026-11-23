@@ -27,6 +27,9 @@ export class Mensaje {
     if (datos.idWhatsApp.trim() === "") {
       throw new DatosDeMensajeInvalidos("El id de WhatsApp del mensaje es obligatorio");
     }
+    if (datos.telefonoContacto.trim() === "") {
+      throw new DatosDeMensajeInvalidos("El teléfono del contacto es obligatorio");
+    }
 
     this.idWhatsApp = datos.idWhatsApp;
     this.orgId = datos.orgId;

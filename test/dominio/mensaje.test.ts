@@ -38,5 +38,12 @@ describe("Mensaje", () => {
       expect(() => new Mensaje(datos)).toThrow(DatosDeMensajeInvalidos);
       expect(() => new Mensaje(datos)).toThrow("El id de WhatsApp del mensaje es obligatorio");
     });
+
+    test("deberia impedir crear un mensaje sin telefono del contacto", () => {
+      const datos = datosValidos({ telefonoContacto: "" });
+
+      expect(() => new Mensaje(datos)).toThrow(DatosDeMensajeInvalidos);
+      expect(() => new Mensaje(datos)).toThrow("El teléfono del contacto es obligatorio");
+    });
   });
 });
