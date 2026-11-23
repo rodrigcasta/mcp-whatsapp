@@ -19,6 +19,12 @@ export class SistemaMensajes {
   ) {}
 
   async registrarEntrante(entrante: MensajeEntrante): Promise<void> {
+    // Meta reintenta las notificaciones que no recibieron un 200 a tiempo, así que un mismo mensaje puede llegar
+    // más de una vez. El reenvío no es un error: se ignora.
+    if (await this.repositorioMensajes.existe(entrante.idWhatsApp)) {
+      return;
+    }
+
     const numero = await this.repositorioNumeros.recuperarPorIdTelefono(entrante.idTelefonoDestino);
     if (numero === undefined) {
       throw new NumeroNoConectado(entrante.idTelefonoDestino);

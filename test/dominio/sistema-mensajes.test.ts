@@ -57,5 +57,13 @@ describe("SistemaMensajes", () => {
       await expect(registro).rejects.toThrow("El número 999999999 no está conectado");
       expect(repositorioMensajes.guardar).not.toHaveBeenCalled();
     });
+
+    test("deberia ignorar un mensaje que ya fue registrado", async () => {
+      repositorioMensajes.existe.calledWith("wamid.1").mockResolvedValue(true);
+
+      await sistema.registrarEntrante(ENTRANTE);
+
+      expect(repositorioMensajes.guardar).not.toHaveBeenCalled();
+    });
   });
 });
