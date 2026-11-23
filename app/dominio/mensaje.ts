@@ -30,6 +30,9 @@ export class Mensaje {
     if (datos.telefonoContacto.trim() === "") {
       throw new DatosDeMensajeInvalidos("El teléfono del contacto es obligatorio");
     }
+    if (Number.isNaN(datos.enviadoEn.getTime())) {
+      throw new DatosDeMensajeInvalidos("La fecha de envío es inválida");
+    }
 
     this.idWhatsApp = datos.idWhatsApp;
     this.orgId = datos.orgId;

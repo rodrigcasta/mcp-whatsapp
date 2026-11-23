@@ -45,5 +45,12 @@ describe("Mensaje", () => {
       expect(() => new Mensaje(datos)).toThrow(DatosDeMensajeInvalidos);
       expect(() => new Mensaje(datos)).toThrow("El teléfono del contacto es obligatorio");
     });
+
+    test("deberia impedir crear un mensaje con fecha de envio invalida", () => {
+      const datos = datosValidos({ enviadoEn: new Date("no es fecha") });
+
+      expect(() => new Mensaje(datos)).toThrow(DatosDeMensajeInvalidos);
+      expect(() => new Mensaje(datos)).toThrow("La fecha de envío es inválida");
+    });
   });
 });
