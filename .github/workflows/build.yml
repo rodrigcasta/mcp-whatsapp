@@ -1,0 +1,37 @@
+name: build
+
+# Corre build.sh, el mismo contrato que se corre en local, en cada push a main y en cada pull request.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - name: build.sh
+        run: ./build.sh
+
+      - name: Publicar reportes
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: reportes
+          path: reports/
+          if-no-files-found: ignore
