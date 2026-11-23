@@ -1,0 +1,34 @@
+import { DatosMensaje, Mensaje } from "../../app/dominio/mensaje";
+
+const ENVIADO_EN = new Date("2026-11-23T14:00:00Z");
+
+function datosValidos(cambios: Partial<DatosMensaje> = {}): DatosMensaje {
+  return {
+    idWhatsApp: "wamid.1",
+    orgId: "estudio",
+    usuarioId: "rodrigo",
+    telefonoContacto: "5493884111111",
+    nombreContacto: "Juan Pérez",
+    texto: "Hola",
+    enviadoEn: ENVIADO_EN,
+    direccion: "entrante",
+    ...cambios,
+  };
+}
+
+describe("Mensaje", () => {
+  describe("constructor", () => {
+    test("deberia crear un mensaje entrante con sus datos", () => {
+      const mensaje = new Mensaje(datosValidos());
+
+      expect(mensaje.idWhatsApp).toBe("wamid.1");
+      expect(mensaje.orgId).toBe("estudio");
+      expect(mensaje.usuarioId).toBe("rodrigo");
+      expect(mensaje.telefonoContacto).toBe("5493884111111");
+      expect(mensaje.nombreContacto).toBe("Juan Pérez");
+      expect(mensaje.texto).toBe("Hola");
+      expect(mensaje.enviadoEn).toEqual(ENVIADO_EN);
+      expect(mensaje.direccion).toBe("entrante");
+    });
+  });
+});
