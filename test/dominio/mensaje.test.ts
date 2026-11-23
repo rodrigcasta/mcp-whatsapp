@@ -1,3 +1,4 @@
+import { DatosDeMensajeInvalidos } from "../../app/dominio/datos-de-mensaje-invalidos";
 import { DatosMensaje, Mensaje } from "../../app/dominio/mensaje";
 
 const ENVIADO_EN = new Date("2026-11-23T14:00:00Z");
@@ -29,6 +30,13 @@ describe("Mensaje", () => {
       expect(mensaje.texto).toBe("Hola");
       expect(mensaje.enviadoEn).toEqual(ENVIADO_EN);
       expect(mensaje.direccion).toBe("entrante");
+    });
+
+    test("deberia impedir crear un mensaje sin id de WhatsApp", () => {
+      const datos = datosValidos({ idWhatsApp: " " });
+
+      expect(() => new Mensaje(datos)).toThrow(DatosDeMensajeInvalidos);
+      expect(() => new Mensaje(datos)).toThrow("El id de WhatsApp del mensaje es obligatorio");
     });
   });
 });

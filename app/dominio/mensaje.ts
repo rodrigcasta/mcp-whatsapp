@@ -1,3 +1,5 @@
+import { DatosDeMensajeInvalidos } from "./datos-de-mensaje-invalidos";
+
 export type Direccion = "entrante" | "saliente";
 
 export interface DatosMensaje {
@@ -22,6 +24,10 @@ export class Mensaje {
   readonly direccion: Direccion;
 
   constructor(datos: DatosMensaje) {
+    if (datos.idWhatsApp.trim() === "") {
+      throw new DatosDeMensajeInvalidos("El id de WhatsApp del mensaje es obligatorio");
+    }
+
     this.idWhatsApp = datos.idWhatsApp;
     this.orgId = datos.orgId;
     this.usuarioId = datos.usuarioId;
