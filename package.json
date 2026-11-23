@@ -1,0 +1,41 @@
+{
+  "name": "mcp-whatsapp",
+  "version": "0.0.1",
+  "description": "Servidor MCP que conecta WhatsApp Business con Claude",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "yarn@1.22.22",
+  "scripts": {
+    "start:ingesta": "node --watch --watch-preserve-output -r ts-node/register app/programa-ingesta.ts",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "jest --runInBand",
+    "test:cov": "jest --runInBand --coverage",
+    "test:aceptacion": "cucumber-js"
+  },
+  "dependencies": {
+    "fastify": "^5.12.8"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^13.3.0",
+    "@eslint/js": "^10",
+    "@jest/globals": "^30.5.2",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.19.2",
+    "eslint": "^10",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.7",
+    "jest": "^30.5.2",
+    "jest-html-reporter": "^4.4.3",
+    "jest-mock-extended": "^4.0.2",
+    "prettier": "^3.10.1",
+    "ts-jest": "^29.4.15",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.73.0"
+  }
+}

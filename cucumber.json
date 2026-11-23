@@ -1,0 +1,10 @@
+{
+  "default": {
+    "paths": ["features/**/*.feature"],
+    "requireModule": ["ts-node/register"],
+    "require": ["features/support/**/*.ts", "features/step_definitions/**/*.ts"],
+    "format": ["progress", "html:reports/aceptacion.html"],
+    "language": "es",
+    "tags": "not @wip"
+  }
+}
