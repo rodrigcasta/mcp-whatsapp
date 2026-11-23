@@ -7,7 +7,7 @@ export function crearPoolDePruebas(): Pool {
 }
 
 export async function vaciarBase(pool: Pool): Promise<void> {
-  await pool.query("TRUNCATE organizaciones, usuarios, numeros_conectados CASCADE");
+  await pool.query("TRUNCATE organizaciones, usuarios, numeros_conectados, mensajes CASCADE");
 }
 
 export async function conectarNumero(
