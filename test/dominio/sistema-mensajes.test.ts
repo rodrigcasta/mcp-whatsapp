@@ -1,5 +1,6 @@
 import { mock, MockProxy } from "jest-mock-extended";
 import { Mensaje } from "../../app/dominio/mensaje";
+import { NumeroNoConectado } from "../../app/dominio/numero-no-conectado";
 import { IRepositorioMensaje } from "../../app/dominio/puerto-repositorio-mensaje";
 import { IRepositorioNumeroConectado } from "../../app/dominio/puerto-repositorio-numero-conectado";
 import { MensajeEntrante, SistemaMensajes } from "../../app/dominio/sistema-mensajes";
@@ -45,6 +46,16 @@ describe("SistemaMensajes", () => {
           direccion: "entrante",
         }),
       );
+    });
+
+    test("deberia impedir registrar un mensaje para un numero que no esta conectado", async () => {
+      const entrante = { ...ENTRANTE, idTelefonoDestino: "999999999" };
+
+      const registro = sistema.registrarEntrante(entrante);
+
+      await expect(registro).rejects.toThrow(NumeroNoConectado);
+      await expect(registro).rejects.toThrow("El número 999999999 no está conectado");
+      expect(repositorioMensajes.guardar).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,4 +1,5 @@
 import { Mensaje } from "./mensaje";
+import { NumeroNoConectado } from "./numero-no-conectado";
 import { IRepositorioMensaje } from "./puerto-repositorio-mensaje";
 import { IRepositorioNumeroConectado } from "./puerto-repositorio-numero-conectado";
 
@@ -19,11 +20,14 @@ export class SistemaMensajes {
 
   async registrarEntrante(entrante: MensajeEntrante): Promise<void> {
     const numero = await this.repositorioNumeros.recuperarPorIdTelefono(entrante.idTelefonoDestino);
+    if (numero === undefined) {
+      throw new NumeroNoConectado(entrante.idTelefonoDestino);
+    }
 
     const mensaje = new Mensaje({
       idWhatsApp: entrante.idWhatsApp,
-      orgId: numero!.orgId,
-      usuarioId: numero!.usuarioId,
+      orgId: numero.orgId,
+      usuarioId: numero.usuarioId,
       telefonoContacto: entrante.telefonoContacto,
       nombreContacto: entrante.nombreContacto,
       texto: entrante.texto,
