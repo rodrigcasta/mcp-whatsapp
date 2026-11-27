@@ -1,9 +1,12 @@
 import Fastify, { FastifyInstance } from "fastify";
+import { SistemaMensajes } from "../dominio/sistema-mensajes";
 import { esFirmaDeMetaValida } from "./firma-meta";
+import { extraerMensajesEntrantes } from "./notificacion-meta";
 
 export interface ConfiguracionIngesta {
   tokenVerificacion: string;
   secretoApp: string;
+  sistemaMensajes: Pick<SistemaMensajes, "registrarEntrante">;
 }
 
 interface ConsultaVerificacion {
@@ -37,6 +40,17 @@ export function crearServidorIngesta(configuracion: ConfiguracionIngesta): Fasti
     const firma = pedido.headers["x-hub-signature-256"];
     if (!esFirmaDeMetaValida(pedido.body, typeof firma === "string" ? firma : undefined, configuracion.secretoApp)) {
       return respuesta.code(401).send();
+    }
+
+    let cuerpo: unknown;
+    try {
+      cuerpo = JSON.parse(pedido.body.toString("utf8"));
+    } catch {
+      return respuesta.code(400).send();
+    }
+
+    for (const entrante of extraerMensajesEntrantes(cuerpo)) {
+      await configuracion.sistemaMensajes.registrarEntrante(entrante);
     }
     return respuesta.code(200).send();
   });
