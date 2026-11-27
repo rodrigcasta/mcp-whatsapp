@@ -1,7 +1,9 @@
 import Fastify, { FastifyInstance } from "fastify";
+import { esFirmaDeMetaValida } from "./firma-meta";
 
 export interface ConfiguracionIngesta {
   tokenVerificacion: string;
+  secretoApp: string;
 }
 
 interface ConsultaVerificacion {
@@ -23,6 +25,20 @@ export function crearServidorIngesta(configuracion: ConfiguracionIngesta): Fasti
       return respuesta.code(403).send();
     }
     return respuesta.type("text/plain").send(consulta["hub.challenge"] ?? "");
+  });
+
+  // La firma se calcula sobre el cuerpo crudo, así que el JSON se guarda como Buffer y se interpreta después de
+  // validarla.
+  servidor.addContentTypeParser("application/json", { parseAs: "buffer" }, (_pedido, cuerpo, listo) => {
+    listo(null, cuerpo);
+  });
+
+  servidor.post<{ Body: Buffer }>("/webhook", async (pedido, respuesta) => {
+    const firma = pedido.headers["x-hub-signature-256"];
+    if (!esFirmaDeMetaValida(pedido.body, typeof firma === "string" ? firma : undefined, configuracion.secretoApp)) {
+      return respuesta.code(401).send();
+    }
+    return respuesta.code(200).send();
   });
 
   return servidor;

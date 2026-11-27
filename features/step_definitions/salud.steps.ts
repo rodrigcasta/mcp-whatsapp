@@ -4,7 +4,10 @@ import { MundoDeLaAplicacion } from "../support/mundo";
 import { crearServidorIngesta } from "../../app/entrada/servidor-ingesta";
 
 Dado("que el servicio de ingesta está levantado", async function (this: MundoDeLaAplicacion) {
-  this.servidorIngesta = crearServidorIngesta({ tokenVerificacion: "token-de-prueba" });
+  this.servidorIngesta = crearServidorIngesta({
+    tokenVerificacion: "token-de-prueba",
+    secretoApp: "secreto-de-prueba",
+  });
   this.urlIngesta = await this.servidorIngesta.listen({ port: 0, host: "127.0.0.1" });
 });
 
