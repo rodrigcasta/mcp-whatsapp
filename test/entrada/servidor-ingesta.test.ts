@@ -1,6 +1,8 @@
 import { createHmac } from "node:crypto";
 import { FastifyInstance } from "fastify";
 import { mock, MockProxy } from "jest-mock-extended";
+import { DatosDeMensajeInvalidos } from "../../app/dominio/datos-de-mensaje-invalidos";
+import { NumeroNoConectado } from "../../app/dominio/numero-no-conectado";
 import { SistemaMensajes } from "../../app/dominio/sistema-mensajes";
 import { crearServidorIngesta } from "../../app/entrada/servidor-ingesta";
 
@@ -124,6 +126,35 @@ describe("servidor de ingesta", () => {
       await notificar(cuerpo, firmar(cuerpo, "otro-secreto"));
 
       expect(sistemaMensajes.registrarEntrante).not.toHaveBeenCalled();
+    });
+
+    test("deberia aceptar sin error un mensaje para un numero que no esta conectado", async () => {
+      sistemaMensajes.registrarEntrante.mockRejectedValue(new NumeroNoConectado("100200300"));
+      const cuerpo = JSON.stringify(notificacionDeTexto("wamid.1", "Hola"));
+
+      const respuesta = await notificar(cuerpo, firmar(cuerpo, SECRETO_APP));
+
+      expect(respuesta.status).toBe(200);
+    });
+
+    test("deberia aceptar sin error un mensaje con datos invalidos", async () => {
+      sistemaMensajes.registrarEntrante.mockRejectedValue(
+        new DatosDeMensajeInvalidos("El teléfono del contacto es obligatorio"),
+      );
+      const cuerpo = JSON.stringify(notificacionDeTexto("wamid.1", "Hola"));
+
+      const respuesta = await notificar(cuerpo, firmar(cuerpo, SECRETO_APP));
+
+      expect(respuesta.status).toBe(200);
+    });
+
+    test("deberia responder un error ante una falla inesperada para que Meta reintente", async () => {
+      sistemaMensajes.registrarEntrante.mockRejectedValue(new Error("se cayó la base"));
+      const cuerpo = JSON.stringify(notificacionDeTexto("wamid.1", "Hola"));
+
+      const respuesta = await notificar(cuerpo, firmar(cuerpo, SECRETO_APP));
+
+      expect(respuesta.status).toBe(500);
     });
 
     test("deberia rechazar un cuerpo firmado que no es JSON", async () => {

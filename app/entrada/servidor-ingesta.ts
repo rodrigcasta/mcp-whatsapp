@@ -1,4 +1,6 @@
 import Fastify, { FastifyInstance } from "fastify";
+import { DatosDeMensajeInvalidos } from "../dominio/datos-de-mensaje-invalidos";
+import { NumeroNoConectado } from "../dominio/numero-no-conectado";
 import { SistemaMensajes } from "../dominio/sistema-mensajes";
 import { esFirmaDeMetaValida } from "./firma-meta";
 import { extraerMensajesEntrantes } from "./notificacion-meta";
@@ -49,8 +51,17 @@ export function crearServidorIngesta(configuracion: ConfiguracionIngesta): Fasti
       return respuesta.code(400).send();
     }
 
+    // Meta reintenta durante días toda notificación que no recibe un 200. Un mensaje que nunca se va a poder
+    // registrar se descarta y queda en el log, en lugar de devolver un error que sólo provocaría reintentos.
     for (const entrante of extraerMensajesEntrantes(cuerpo)) {
-      await configuracion.sistemaMensajes.registrarEntrante(entrante);
+      try {
+        await configuracion.sistemaMensajes.registrarEntrante(entrante);
+      } catch (error) {
+        if (!(error instanceof NumeroNoConectado || error instanceof DatosDeMensajeInvalidos)) {
+          throw error;
+        }
+        pedido.log.warn({ idWhatsApp: entrante.idWhatsApp, motivo: error.message }, "Mensaje descartado");
+      }
     }
     return respuesta.code(200).send();
   });
