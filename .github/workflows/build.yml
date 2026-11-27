@@ -28,6 +28,10 @@ jobs:
       - name: build.sh
         run: ./build.sh
 
+      - name: Bajar las bases
+        if: always()
+        run: docker compose down --volumes
+
       - name: Publicar reportes
         if: always()
         uses: actions/upload-artifact@v6

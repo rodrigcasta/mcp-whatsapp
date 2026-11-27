@@ -8,5 +8,10 @@ set -x
 yarn install --frozen-lockfile
 yarn lint
 yarn typecheck
+
+# Base de pruebas recreada desde cero con todas las migraciones
+docker compose up -d --wait test_db
+docker compose run --rm flyway-test
+
 yarn test
 yarn test:aceptacion

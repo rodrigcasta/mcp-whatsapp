@@ -7,6 +7,7 @@ decide: el sistema clasifica, resume, detecta y redacta, y todo envío pasa por 
 
 - Node 24 (la versión exacta está en `.nvmrc`)
 - yarn 1 (`corepack enable`)
+- Docker, para las bases de Postgres de desarrollo y de pruebas
 
 ## Comandos
 
@@ -19,7 +20,24 @@ decide: el sistema clasifica, resume, detecta y redacta, y todo envío pasa por 
 | `yarn test:aceptacion` | Escenarios de Cucumber, sin los marcados `@wip`                                                |
 | `yarn start:ingesta`   | Levanta el servicio de ingesta en el puerto `PUERTO` (3000 por defecto)                        |
 
+Para levantar la ingesta hacen falta, además de las de Postgres, `META_TOKEN_VERIFICACION` (el token que se carga en
+el panel de Meta al configurar el webhook) y `META_SECRETO_APP` (el secreto de la app, con el que se valida la firma
+`X-Hub-Signature-256` de cada notificación). Ver `.env.ejemplo`.
+
 Variables de depuración: `MOSTRAR_LOG=1` muestra el log de Fastify.
+
+## Bases de datos
+
+`compose.yml` levanta dos Postgres: `dev_db` en el puerto 5433 y `test_db` en el 5434. Las migraciones viven en `db/`
+con el formato de Flyway (`V<fecha>.<n>__Descripcion.sql`) y nunca se editan una vez mergeadas: un cambio de esquema
+es siempre una migración nueva.
+
+```
+docker compose up -d dev_db && docker compose run --rm flyway-dev     # desarrollo
+docker compose up -d --wait test_db && docker compose run --rm flyway-test   # pruebas, la recrea desde cero
+```
+
+Para desarrollo, copiar `.env.ejemplo` a `.env`.
 
 ## Estructura
 

@@ -1,0 +1,59 @@
+# Bases de desarrollo (5433) y de pruebas (5434), cada una con su servicio de Flyway que aplica las migraciones de db/.
+#   docker compose up -d dev_db && docker compose run --rm flyway-dev
+#   docker compose up -d --wait test_db && docker compose run --rm flyway-test
+
+x-postgres: &postgres
+  image: postgres:18.7-alpine
+  environment:
+    POSTGRES_PASSWORD: example
+  healthcheck:
+    test: ["CMD", "pg_isready", "-U", "postgres"]
+    interval: 2s
+    timeout: 2s
+    retries: 30
+
+x-flyway: &flyway
+  image: flyway/flyway:13.12.2-alpine
+  volumes:
+    - ./db:/flyway/sql:ro
+
+services:
+  dev_db:
+    <<: *postgres
+    ports:
+      - 5433:5432
+
+  test_db:
+    <<: *postgres
+    ports:
+      - 5434:5432
+
+  flyway-dev:
+    <<: *flyway
+    command:
+      [
+        "-url=jdbc:postgresql://dev_db:5432/postgres",
+        "-user=postgres",
+        "-password=example",
+        "-connectRetries=60",
+        "migrate",
+      ]
+    depends_on:
+      dev_db:
+        condition: service_healthy
+
+  flyway-test:
+    <<: *flyway
+    command:
+      [
+        "-url=jdbc:postgresql://test_db:5432/postgres",
+        "-user=postgres",
+        "-password=example",
+        "-connectRetries=60",
+        "-cleanDisabled=false",
+        "clean",
+        "migrate",
+      ]
+    depends_on:
+      test_db:
+        condition: service_healthy

@@ -1,5 +1,4 @@
 # language: es
-@wip
 Característica: Recepción de mensajes por webhook
   Como usuario con mi número de WhatsApp Business conectado
   Quiero que el sistema guarde cada mensaje que me escriben
