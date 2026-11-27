@@ -11,7 +11,13 @@ export function crearPoolDeAceptacion(): Pool {
   return crearPool({ ...process.env, POSTGRES_PORT: process.env.POSTGRES_PORT ?? "5434" });
 }
 
-export async function levantarIngesta(mundo: MundoDeLaAplicacion): Promise<void> {
-  mundo.servidorIngesta = armarIngesta(mundo.pool, { tokenVerificacion: TOKEN_VERIFICACION, secretoApp: SECRETO_APP });
-  mundo.urlIngesta = await mundo.servidorIngesta.listen({ port: 0, host: "127.0.0.1" });
+export async function levantarIngesta(mundo: MundoDeLaAplicacion): Promise<string> {
+  if (mundo.servidorIngesta === undefined || mundo.urlIngesta === undefined) {
+    mundo.servidorIngesta = armarIngesta(mundo.pool, {
+      tokenVerificacion: TOKEN_VERIFICACION,
+      secretoApp: SECRETO_APP,
+    });
+    mundo.urlIngesta = await mundo.servidorIngesta.listen({ port: 0, host: "127.0.0.1" });
+  }
+  return mundo.urlIngesta;
 }

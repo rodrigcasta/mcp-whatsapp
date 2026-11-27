@@ -20,6 +20,10 @@ decide: el sistema clasifica, resume, detecta y redacta, y todo envío pasa por 
 | `yarn test:aceptacion` | Escenarios de Cucumber, sin los marcados `@wip`                                                |
 | `yarn start:ingesta`   | Levanta el servicio de ingesta en el puerto `PUERTO` (3000 por defecto)                        |
 
+Para levantar la ingesta hacen falta, además de las de Postgres, `META_TOKEN_VERIFICACION` (el token que se carga en
+el panel de Meta al configurar el webhook) y `META_SECRETO_APP` (el secreto de la app, con el que se valida la firma
+`X-Hub-Signature-256` de cada notificación). Ver `.env.ejemplo`.
+
 Variables de depuración: `MOSTRAR_LOG=1` muestra el log de Fastify.
 
 ## Bases de datos
